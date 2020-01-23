@@ -83,7 +83,7 @@ int* merge_sort(int *arr, int n)
 	Also note you can write any other function that you might need.
 	*/
 
-	int C = 16000;
+	int C = 32000;
 
 	if(n<C)
 	{
@@ -116,7 +116,14 @@ int* merge_sort(int *arr, int n)
 		for(int i=0;i<size;i+=2)
 		{
 			arr1[k] = arr1[i];
-			arr2[k++] = arr2[i];
+			if(i==size-1)
+			{
+				arr2[k++] = arr2[i];
+			}
+			else
+			{
+				arr2[k++] = arr2[i] + arr2[i+1];
+			}
 		}
 		size = k;
 	}
