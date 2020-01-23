@@ -7,6 +7,20 @@ typedef struct Matrix
 	int matrix[1000][1000];
 }Matrix;
 
+void mult_matr(Matrix *ans,Matrix *a,Matrix *b,int x,int y,int sizel,int sizer,int q)
+{
+	for(int i=x;i<x+sizel;i++)
+	{
+		for(int k=0;k<q;k++)
+		{
+			for(int j=y;j<y+sizer;j++)
+			{
+				ans->matrix[i][j] += a->matrix[i][k] * b->matrix[k][j];
+			}
+		}
+	}
+}
+
 Matrix *matrix_multiply(Matrix *a,Matrix *b,int p,int q,int r)
 {
 	Matrix *result;
@@ -29,17 +43,13 @@ Matrix *matrix_multiply(Matrix *a,Matrix *b,int p,int q,int r)
 	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
 	long double st=ts.tv_nsec/(1e9)+ts.tv_sec;
 // 
+	int block = r;
 
-	int sizel = 64 , sizer = 64;
-
-	for(int i=0;i<p;i++)
+	for(int i=0;i<p;i+=block)
 	{
-		for(int k=0;k<q;k++)
+		for(int j=0;j<r;j+=block)
 		{
-			for(int j=0;j<r;j++)
-			{
-				result->matrix[i][j] += a->matrix[i][k] * b->matrix[k][j];
-			}
+			mult_matr(result,a,b,i,j,(i+block-1<p? block:p - i),(j+block-1<r? block:r - j),q);
 		}
 	}
 
