@@ -3,7 +3,6 @@
 #include<time.h>
 
 int *arr1,*arr2,*tmparr;
-// int arr1[1000000],arr2[1000000],tmparr[1000000];
 
 void merge(int arr[], int l, int m, int r) 
 {
@@ -92,14 +91,22 @@ int* merge_sort(int *arr, int n)
 	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
 	long double st=ts.tv_nsec/(1e9)+ts.tv_sec;
 // 
-	arr1 = (int *)malloc(n*sizeof(int));
-	arr2 = (int *)malloc(n*sizeof(int));
-	tmparr = (int *)malloc(n*sizeof(int));
 
+	// Cache Size
 	int C = 16000;
 
+	// arr1 stores starting indices of blocks of size C
+	arr1 = (int *)malloc(n*sizeof(int));
+	// arr2 stores size of each block
+	arr2 = (int *)malloc(n*sizeof(int));
+	// temporary array for merge()
+	tmparr = (int *)malloc(n*sizeof(int));
+
+	// size of arr1,arr2
 	int size = 0;
 	
+	// Divide array into blocks of size <= C and sort them
+	// Store index and size in arr1,arr2 respectively
 	for(int i=0;i<n;i+=C)
 	{
 		arr1[size] = i;
@@ -115,6 +122,7 @@ int* merge_sort(int *arr, int n)
 		}
 	}
 
+	// Take 2 blocks at a time and merge untill only 1 block of size n is remaining which is the sorted array
 	while(size>1)
 	{
 		for(int i=0;i<size-1;i+=2)
@@ -136,6 +144,8 @@ int* merge_sort(int *arr, int n)
 		}
 		size = k;
 	}
+	
+	// Copy array arr into ret to return
 	for(int i=0;i<n;i++)
 	{
 		ret[i] = arr[i];
