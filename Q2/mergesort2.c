@@ -2,60 +2,73 @@
 #include<stdlib.h>
 #include<time.h>
 
+int *arr1,*arr2,*tmparr;
+// int arr1[1000000],arr2[1000000],tmparr[1000000];
+
 void merge(int arr[], int l, int m, int r) 
-{
-	if(arr[m]<=arr[m+1])
-	{
-		return ;
-	}
-
-    int i = l, j = m + 1, k = 0, tmparr[r-l+1];
-
-    while(i<=m && j<=r)
-    {
-    	if(arr[i] <= arr[j])
-    	{
-    		tmparr[k++] = arr[i++];
-    	}
-    	else
-    	{
-    		tmparr[k++] = arr[j++];
-    	}
-    }
-
-    while(i<=m)
-    {
-    	tmparr[k++] = arr[i++];
-    }
-
-    while(j<=r)
-    {
-    	tmparr[k++] = arr[j++];
-    }
-
-    k = 0;
-    for(i=l;i<=r;i++)
-    {
-    	arr[i] = tmparr[k++];
-    }
+{ 
+    int i, j, k; 
+    int n1 = m - l + 1; 
+    int n2 =  r - m; 
+  
+    /* create temp arrays */
+    int L[n1], R[n2]; 
+  
+    /* Copy data to temp arrays L[] and R[] */
+    for (i = 0; i < n1; i++) 
+        L[i] = arr[l + i]; 
+    for (j = 0; j < n2; j++) 
+        R[j] = arr[m + 1+ j]; 
+  
+    /* Merge the temp arrays back into arr[l..r]*/
+    i = 0; // Initial index of first subarray 
+    j = 0; // Initial index of second subarray 
+    k = l; // Initial index of merged subarray 
+    while (i < n1 && j < n2) 
+    { 
+        if (L[i] <= R[j]) 
+        { 
+            arr[k] = L[i]; 
+            i++; 
+        } 
+        else
+        { 
+            arr[k] = R[j]; 
+            j++; 
+        } 
+        k++; 
+    } 
+  
+    /* Copy the remaining elements of L[], if there 
+       are any */
+    while (i < n1) 
+    { 
+        arr[k] = L[i]; 
+        i++; 
+        k++; 
+    } 
+  
+    /* Copy the remaining elements of R[], if there 
+       are any */
+    while (j < n2) 
+    { 
+        arr[k] = R[j]; 
+        j++; 
+        k++; 
+    } 
 } 
   
-void mergeSort(int *arr, int l, int r) 
+/* l is for left index and r is right index of the 
+   sub-array of arr to be sorted */
+void mergeSort(int arr[], int l, int r) 
 { 
-	if(l + 1 == r)
-	{
-		if(arr[l] > arr[r])
-		{
-			int t = arr[l];
-			arr[l] = arr[r];
-			arr[r] = t;
-		}
-		return ;
-	}
     if (l < r) 
-    {
-        int m = l + ( r - l ) / 2;
-
+    { 
+        // Same as (l+r)/2, but avoids overflow for 
+        // large l and h 
+        int m = l+(r-l)/2; 
+  
+        // Sort first and second halves 
         mergeSort(arr, l, m); 
         mergeSort(arr, m+1, r); 
   
@@ -70,10 +83,11 @@ void printArray(int A[], int size)
     printf("\n"); 
 }
 
-int arr1[1000000],arr2[1000000],size=0;
-
 int* merge_sort(int *arr, int n)
 {
+	int *ret;
+	ret=malloc(sizeof(int)*n);
+
 	/*
 	Maximum value of n can be 10^6.
 	Your Code goes here. The sorted array should be stored in ret
@@ -82,27 +96,32 @@ int* merge_sort(int *arr, int n)
 	
 	Also note you can write any other function that you might need.
 	*/
+// 
+	struct timespec ts;
+	printf("Running Program\n");
+	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
+	long double st=ts.tv_nsec/(1e9)+ts.tv_sec;
+// 
+	arr1 = (int *)malloc(n*sizeof(int));
+	arr2 = (int *)malloc(n*sizeof(int));
+	tmparr = (int *)malloc(n*sizeof(int));
 
 	int C = 32000;
 
-	if(n<C)
-	{
-		mergeSort(arr,0,n-1);
-		return arr;
-	}
-
+	int size = 0;
+	
 	for(int i=0;i<n;i+=C)
 	{
 		arr1[size] = i;
-		if(i+C-1<n)
+		if(i+C-1>=n)
 		{
-			mergeSort(arr,i,i+C-1);
-			arr2[size++] = C;
+			arr2[size++] = n - i;
+			mergeSort(arr,i,n - 1);
 		}
 		else
 		{
-			mergeSort(arr,i,n-1);
-			arr2[size++] = n - i;
+			arr2[size++] = C;
+			mergeSort(arr,i,i+C-1);
 		}
 	}
 
@@ -127,21 +146,16 @@ int* merge_sort(int *arr, int n)
 		}
 		size = k;
 	}
-
-	return arr;
-}
-
-void checktime(int *arr,int n)
-{
-	struct timespec ts;
-	printf("Running Program\n");
-	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
-	long double st=ts.tv_nsec/(1e9)+ts.tv_sec;
-	// Call Funcn Here
-	merge_sort(arr,n);
+	for(int i=0;i<n;i++)
+	{
+		ret[i] = arr[i];
+	}
+// 
 	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
 	long double en=ts.tv_nsec/(1e9)+ts.tv_sec;
 	printf("Program ended\nTime = %Lf\n",en-st);
+// 
+	return ret;
 }
 
 int arr[1000000];
@@ -154,7 +168,8 @@ int main()
 	{
 		scanf("%d",&arr[i]);
 	}
-	checktime(arr,n);
+	merge_sort(arr,n);
+	// checktime(arr,n);
 	// printArray(arr,n);
 	return 0;
 }

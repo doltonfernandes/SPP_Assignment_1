@@ -2,8 +2,8 @@
 #include<stdlib.h>
 #include<time.h>
 
-int *arr1,*arr2,*tmparr,size=0;
-// int arr1[1000000],arr2[1000000],tmparr[1000000],size=0;
+int *arr1,*arr2,*tmparr;
+// int arr1[1000000],arr2[1000000],tmparr[1000000];
 
 void merge(int arr[], int l, int m, int r) 
 {
@@ -43,6 +43,29 @@ void merge(int arr[], int l, int m, int r)
     }
 }
 
+void mergeSort(int *arr, int l, int r) 
+{ 
+	if(l + 1 == r)
+	{
+		if(arr[l] > arr[r])
+		{
+			int t = arr[l];
+			arr[l] = arr[r];
+			arr[r] = t;
+		}
+		return ;
+	}
+    if (l < r) 
+    {
+        int m = l + ( r - l ) / 2;
+
+        mergeSort(arr, l, m); 
+        mergeSort(arr, m+1, r); 
+  
+        merge(arr, l, m, r); 
+    } 
+}
+
 void printArray(int A[], int size) 
 { 
     for (int i=0; i < size; i++) 
@@ -52,6 +75,9 @@ void printArray(int A[], int size)
 
 int* merge_sort(int *arr, int n)
 {
+	int *ret;
+	ret=malloc(sizeof(int)*n);
+
 	/*
 	Maximum value of n can be 10^6.
 	Your Code goes here. The sorted array should be stored in ret
@@ -60,23 +86,34 @@ int* merge_sort(int *arr, int n)
 	
 	Also note you can write any other function that you might need.
 	*/
-
+// 
+	struct timespec ts;
+	printf("Running Program\n");
+	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
+	long double st=ts.tv_nsec/(1e9)+ts.tv_sec;
+// 
 	arr1 = (int *)malloc(n*sizeof(int));
 	arr2 = (int *)malloc(n*sizeof(int));
 	tmparr = (int *)malloc(n*sizeof(int));
 
+	int C = 16000;
+
+	int size = 0;
 	
-	for(int i=0;i<n;i+=1)
+	for(int i=0;i<n;i+=C)
 	{
-		arr1[i] = i;
+		arr1[size] = i;
+		if(i+C-1>=n)
+		{
+			arr2[size++] = n - i;
+			mergeSort(arr,i,n - 1);
+		}
+		else
+		{
+			arr2[size++] = C;
+			mergeSort(arr,i,i+C-1);
+		}
 	}
-
-	for(int i=0;i<n;i+=1)
-	{
-		arr2[i] = 1;
-	}
-
-	size = n;
 
 	while(size>1)
 	{
@@ -99,21 +136,16 @@ int* merge_sort(int *arr, int n)
 		}
 		size = k;
 	}
-
-	return arr;
-}
-
-void checktime(int *arr,int n)
-{
-	struct timespec ts;
-	printf("Running Program\n");
-	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
-	long double st=ts.tv_nsec/(1e9)+ts.tv_sec;
-	// Call Funcn Here
-	merge_sort(arr,n);
+	for(int i=0;i<n;i++)
+	{
+		ret[i] = arr[i];
+	}
+// 
 	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
 	long double en=ts.tv_nsec/(1e9)+ts.tv_sec;
 	printf("Program ended\nTime = %Lf\n",en-st);
+// 
+	return ret;
 }
 
 int arr[1000000];
@@ -126,7 +158,8 @@ int main()
 	{
 		scanf("%d",&arr[i]);
 	}
-	checktime(arr,n);
+	merge_sort(arr,n);
+	// checktime(arr,n);
 	// printArray(arr,n);
 	return 0;
 }
