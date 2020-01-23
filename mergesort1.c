@@ -2,6 +2,9 @@
 #include<stdlib.h>
 #include<time.h>
 
+int *arr1,*arr2,*tmparr,size=0;
+// int arr1[1000000],arr2[1000000],tmparr[1000000],size=0;
+
 void merge(int arr[], int l, int m, int r) 
 {
 	if(arr[m]<=arr[m+1])
@@ -9,7 +12,7 @@ void merge(int arr[], int l, int m, int r)
 		return ;
 	}
 
-    int i = l, j = m + 1, k = 0, tmparr[r-l+1];
+    int i = l, j = m + 1, k = 0;
 
     while(i<=m && j<=r)
     {
@@ -46,8 +49,6 @@ void printArray(int A[], int size)
         printf("%d ", A[i]); 
     printf("\n"); 
 }
-
-int arr1[1000000],arr2[1000000],size=0;
 
 int* merge_sort(int *arr, int n)
 {
