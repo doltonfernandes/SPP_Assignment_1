@@ -61,11 +61,22 @@ int* merge_sort(int *arr, int n)
 	Also note you can write any other function that you might need.
 	*/
 
+	arr1 = (int *)malloc(n*sizeof(int));
+	arr2 = (int *)malloc(n*sizeof(int));
+	tmparr = (int *)malloc(n*sizeof(int));
+
+	
 	for(int i=0;i<n;i+=1)
 	{
-		arr1[size] = i;
-		arr2[size++] = 1;
+		arr1[i] = i;
 	}
+
+	for(int i=0;i<n;i+=1)
+	{
+		arr2[i] = 1;
+	}
+
+	size = n;
 
 	while(size>1)
 	{
@@ -77,7 +88,14 @@ int* merge_sort(int *arr, int n)
 		for(int i=0;i<size;i+=2)
 		{
 			arr1[k] = arr1[i];
-			arr2[k++] = arr2[i];
+			if(i==size-1)
+			{
+				arr2[k++] = arr2[i];
+			}
+			else
+			{
+				arr2[k++] = arr2[i] + arr2[i+1];
+			}
 		}
 		size = k;
 	}
