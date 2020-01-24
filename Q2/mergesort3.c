@@ -14,6 +14,7 @@ int *tmparr;
 
 void merge(int arr[], int l, int m, int r) 
 {
+
 	if(arr[m]<=arr[m+1])
 	{
 		return ;
@@ -59,7 +60,7 @@ void mergeSort(int *arr, int l, int r)
 			{
 				if(arr[i]>arr[j])
 				{
-					register int t = arr[i];
+					int t = arr[i];
 					arr[i] = arr[j];
 					arr[j] = t;
 				}
@@ -88,6 +89,13 @@ void printArray(int A[], int size)
 
 int* merge_sort(int *arr, int n)
 {
+
+// 
+	struct timespec ts;
+	printf("Running Program\n");
+	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
+	long double st=ts.tv_nsec/(1e9)+ts.tv_sec;
+// 
 	int *ret;
 	ret=(int *)malloc(sizeof(int)*n);
 
@@ -99,12 +107,6 @@ int* merge_sort(int *arr, int n)
 	
 	Also note you can write any other function that you might need.
 	*/
-// 
-	struct timespec ts;
-	printf("Running Program\n");
-	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
-	long double st=ts.tv_nsec/(1e9)+ts.tv_sec;
-// 
 
 	// Cache Size
 	int C = 16000;
@@ -140,8 +142,8 @@ int* merge_sort(int *arr, int n)
 		{
 			merge(arr,arr1[i].a,arr1[i].a+arr1[i].b-1,arr1[i+1].a+arr1[i+1].b-1);
 		}
-		int k = 0;
-		for(int i=0;i<size-1;i+=2)
+		register int k = 0;
+		for(register int i=0;i<size-1;i+=2)
 		{
 			arr1[k].a = arr1[i].a;
 			arr1[k++].b = arr1[i].b + arr1[i+1].b;
