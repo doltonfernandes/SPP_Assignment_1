@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include<time.h>
 
 struct node
@@ -18,7 +19,8 @@ void merge(int arr[], int l, int m, int r)
 		return ;
 	}
 
-    int i = l, j = m + 1, k = 0;
+    register int i = l, j = m + 1;
+    int k = 0;
 
     while(i<=m && j<=r)
     {
@@ -32,35 +34,32 @@ void merge(int arr[], int l, int m, int r)
     	}
     }
 
-    while(i<=m)
+    for(;i<=m;i++)
     {
-    	tmparr[k++] = arr[i++];
+    	tmparr[k++] = arr[i];
     }
 
-    while(j<=r)
+    for(;j<=r;j++)
     {
-    	tmparr[k++] = arr[j++];
+    	tmparr[k++] = arr[j];
     }
 
     k = 0;
 
-    for(i=l;i<=r;i++)
-    {
-    	arr[i] = tmparr[k++];
-    }
+    memcpy(&arr[l],tmparr,(r-l+1)*sizeof(int));
 }
 
 void mergeSort(int *arr, int l, int r) 
 { 
 	if(l + 5 > r)
 	{
-		for(int i=l;i<=r;i++)
+		for(register int i=l;i<=r;i++)
 		{
-			for(int j=i+1;j<=r;j++)
+			for(register int j=i+1;j<=r;j++)
 			{
 				if(arr[i]>arr[j])
 				{
-					int t = arr[i];
+					register int t = arr[i];
 					arr[i] = arr[j];
 					arr[j] = t;
 				}
@@ -68,15 +67,16 @@ void mergeSort(int *arr, int l, int r)
 		}
 		return ;
 	}
+
     if (l < r) 
     {
-        int m = l + ( ( r - l ) >> 1 );
+        register int m = l + ( ( r - l ) >> 1 );
 
         mergeSort(arr, l, m); 
         mergeSort(arr, m+1, r); 
   
         merge(arr, l, m, r);
-    } 
+    }
 }
 
 void printArray(int A[], int size) 
@@ -119,11 +119,18 @@ int* merge_sort(int *arr, int n)
 	
 	// Divide array into blocks of size <= C and sort them
 	// Store index and size in arr1,arr2 respectively
-	for(int i=0;i<n;i+=C)
+	for(int i=C-1;i<n;i+=C)
 	{
-		arr1[size].a = i;
-		arr1[size++].b = (i+C-1>=n? n - i:C);
-		mergeSort(arr,i,(i+C-1>=n? n-1:i+C-1));
+		arr1[size].a = i - C + 1;
+		arr1[size++].b = C;
+		mergeSort(arr,i - C + 1,i);
+	}
+
+	if(n%C!=0)
+	{
+		arr1[size].a = C*(((n+C-1)/C)-1);
+		arr1[size++].b = n%C;
+		mergeSort(arr,C*(((n+C-1)/C)-1),C*(((n+C-1)/C)-1)+(n%C)-1);
 	}
 
 	// Take 2 blocks at a time and merge untill only 1 block of size n is remaining which is the sorted array
@@ -147,10 +154,8 @@ int* merge_sort(int *arr, int n)
 	}
 	
 	// Copy array arr into ret to return
-	for(int i=0;i<n;i++)
-	{
-		ret[i] = arr[i];
-	}
+	memcpy(ret,arr,n*sizeof(int));
+
 // 
 	clock_gettime(CLOCK_MONOTONIC_RAW,&ts);
 	long double en=ts.tv_nsec/(1e9)+ts.tv_sec;
