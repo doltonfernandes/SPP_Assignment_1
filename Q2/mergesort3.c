@@ -43,6 +43,7 @@ void merge(int arr[], int l, int m, int r)
     }
 
     k = 0;
+
     for(i=l;i<=r;i++)
     {
     	arr[i] = tmparr[k++];
@@ -51,24 +52,30 @@ void merge(int arr[], int l, int m, int r)
 
 void mergeSort(int *arr, int l, int r) 
 { 
-	if(l + 1 == r)
+	if(l + 5 > r)
 	{
-		if(arr[l] > arr[r])
+		for(int i=l;i<=r;i++)
 		{
-			int t = arr[l];
-			arr[l] = arr[r];
-			arr[r] = t;
+			for(int j=i+1;j<=r;j++)
+			{
+				if(arr[i]>arr[j])
+				{
+					int t = arr[i];
+					arr[i] = arr[j];
+					arr[j] = t;
+				}
+			}
 		}
 		return ;
 	}
     if (l < r) 
     {
-        int m = l + ( r - l ) / 2;
+        int m = l + ( ( r - l ) >> 1 );
 
         mergeSort(arr, l, m); 
         mergeSort(arr, m+1, r); 
   
-        merge(arr, l, m, r); 
+        merge(arr, l, m, r);
     } 
 }
 
@@ -107,14 +114,15 @@ int* merge_sort(int *arr, int n)
 	// temporary array for merge()
 	tmparr = (int *)malloc(n*sizeof(int));
 
-	// size of arr1,arr2
+	// size of arr1
 	int size = 0;
 	
 	// Divide array into blocks of size <= C and sort them
 	// Store index and size in arr1,arr2 respectively
 	for(int i=0;i<n;i+=C)
 	{
-		arr1[size] = {i,(i+C-1>=n? n - i:C)};
+		arr1[size].a = i;
+		arr1[size++].b = (i+C-1>=n? n - i:C);
 		mergeSort(arr,i,(i+C-1>=n? n-1:i+C-1));
 	}
 
@@ -126,17 +134,14 @@ int* merge_sort(int *arr, int n)
 			merge(arr,arr1[i].a,arr1[i].a+arr1[i].b-1,arr1[i+1].a+arr1[i+1].b-1);
 		}
 		int k = 0;
-		for(int i=0;i<size;i+=2)
+		for(int i=0;i<size-1;i+=2)
 		{
 			arr1[k].a = arr1[i].a;
-			if(i==size-1)
-			{
-				arr1[k++].b = arr1[i].b;
-			}
-			else
-			{
-				arr1[k++].b = arr1[i].b + arr1[i+1].b;
-			}
+			arr1[k++].b = arr1[i].b + arr1[i+1].b;
+		}
+		if(size%2)
+		{
+			arr1[k++] = arr1[size-1];
 		}
 		size = k;
 	}

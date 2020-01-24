@@ -2,7 +2,14 @@
 #include<stdlib.h>
 #include<time.h>
 
-int *arr1,*arr2,*tmparr;
+struct node
+{
+	int a,b;
+};
+
+struct node *arr1;
+
+int *tmparr;
 
 void merge(int arr[], int l, int m, int r) 
 {
@@ -36,6 +43,7 @@ void merge(int arr[], int l, int m, int r)
     }
 
     k = 0;
+
     for(i=l;i<=r;i++)
     {
     	arr[i] = tmparr[k++];
@@ -44,24 +52,30 @@ void merge(int arr[], int l, int m, int r)
 
 void mergeSort(int *arr, int l, int r) 
 { 
-	if(l + 1 == r)
+	if(l + 5 > r)
 	{
-		if(arr[l] > arr[r])
+		for(int i=l;i<=r;i++)
 		{
-			int t = arr[l];
-			arr[l] = arr[r];
-			arr[r] = t;
+			for(int j=i+1;j<=r;j++)
+			{
+				if(arr[i]>arr[j])
+				{
+					int t = arr[i];
+					arr[i] = arr[j];
+					arr[j] = t;
+				}
+			}
 		}
 		return ;
 	}
     if (l < r) 
     {
-        int m = l + ( r - l ) / 2;
+        int m = l + ( ( r - l ) >> 1 );
 
         mergeSort(arr, l, m); 
         mergeSort(arr, m+1, r); 
   
-        merge(arr, l, m, r); 
+        merge(arr, l, m, r);
     } 
 }
 
@@ -75,7 +89,7 @@ void printArray(int A[], int size)
 int* merge_sort(int *arr, int n)
 {
 	int *ret;
-	ret=malloc(sizeof(int)*n);
+	ret=(int *)malloc(sizeof(int)*n);
 
 	/*
 	Maximum value of n can be 10^6.
@@ -95,31 +109,21 @@ int* merge_sort(int *arr, int n)
 	// Cache Size
 	int C = 16000;
 
-	// arr1 stores starting indices of blocks of size C
-	arr1 = (int *)malloc(n*sizeof(int));
-	// arr2 stores size of each block
-	arr2 = (int *)malloc(n*sizeof(int));
+	// arr1 stores starting indices of blocks of size C and size
+	arr1 = (struct node *)malloc(n*sizeof(struct node));
 	// temporary array for merge()
 	tmparr = (int *)malloc(n*sizeof(int));
 
-	// size of arr1,arr2
+	// size of arr1
 	int size = 0;
 	
 	// Divide array into blocks of size <= C and sort them
 	// Store index and size in arr1,arr2 respectively
 	for(int i=0;i<n;i+=C)
 	{
-		arr1[size] = i;
-		if(i+C-1>=n)
-		{
-			arr2[size++] = n - i;
-			mergeSort(arr,i,n - 1);
-		}
-		else
-		{
-			arr2[size++] = C;
-			mergeSort(arr,i,i+C-1);
-		}
+		arr1[size].a = i;
+		arr1[size++].b = (i+C-1>=n? n - i:C);
+		mergeSort(arr,i,(i+C-1>=n? n-1:i+C-1));
 	}
 
 	// Take 2 blocks at a time and merge untill only 1 block of size n is remaining which is the sorted array
@@ -127,20 +131,17 @@ int* merge_sort(int *arr, int n)
 	{
 		for(int i=0;i<size-1;i+=2)
 		{
-			merge(arr,arr1[i],arr1[i]+arr2[i]-1,arr1[i+1]+arr2[i+1]-1);
+			merge(arr,arr1[i].a,arr1[i].a+arr1[i].b-1,arr1[i+1].a+arr1[i+1].b-1);
 		}
 		int k = 0;
-		for(int i=0;i<size;i+=2)
+		for(int i=0;i<size-1;i+=2)
 		{
-			arr1[k] = arr1[i];
-			if(i==size-1)
-			{
-				arr2[k++] = arr2[i];
-			}
-			else
-			{
-				arr2[k++] = arr2[i] + arr2[i+1];
-			}
+			arr1[k].a = arr1[i].a;
+			arr1[k++].b = arr1[i].b + arr1[i+1].b;
+		}
+		if(size%2)
+		{
+			arr1[k++] = arr1[size-1];
 		}
 		size = k;
 	}
