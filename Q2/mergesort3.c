@@ -35,14 +35,14 @@ void merge(int arr[], int l, int m, int r)
     	}
     }
 
-    for(;i<=m;i++)
+    while(i<=m)
     {
-    	tmparr[k++] = arr[i];
+    	tmparr[k++] = arr[i++];
     }
 
-    for(;j<=r;j++)
+    while(j<=r)
     {
-    	tmparr[k++] = arr[j];
+    	tmparr[k++] = arr[j++];
     }
 
     k = 0;
@@ -130,9 +130,10 @@ int* merge_sort(int *arr, int n)
 
 	if(n%C!=0)
 	{
-		arr1[size].a = C*(((n+C-1)/C)-1);
+		register int i = C*(((n+C-1)/C)-1);
+		arr1[size].a = i;
 		arr1[size++].b = n%C;
-		mergeSort(arr,C*(((n+C-1)/C)-1),C*(((n+C-1)/C)-1)+(n%C)-1);
+		mergeSort(arr,i,i+(n%C)-1);
 	}
 
 	// Take 2 blocks at a time and merge untill only 1 block of size n is remaining which is the sorted array
