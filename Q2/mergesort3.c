@@ -27,27 +27,29 @@ void merge(int arr[], int l, int m, int r)
     {
     	if(arr[i] <= arr[j])
     	{
-    		tmparr[k++] = arr[i++];
+    		tmparr[k++] = arr[i];
+    		++i;
     	}
     	else
     	{
-    		tmparr[k++] = arr[j++];
+    		tmparr[k++] = arr[j];
+    		++j;
     	}
     }
 
     while(i<=m)
     {
-    	tmparr[k++] = arr[i++];
+    	tmparr[k++] = arr[i];
+    	++i;
     }
 
     while(j<=r)
     {
-    	tmparr[k++] = arr[j++];
+    	tmparr[k++] = arr[j];
+    	++j;
     }
 
-    k = 0;
-
-    memcpy(&arr[l],tmparr,(r-l+1)*sizeof(int));
+    memcpy(&arr[l],tmparr,k*sizeof(int));
 }
 
 void mergeSort(int *arr, int l, int r) 
@@ -130,10 +132,11 @@ int* merge_sort(int *arr, int n)
 
 	if(n%C!=0)
 	{
+		register int j = n%C;
 		register int i = C*(((n+C-1)/C)-1);
 		arr1[size].a = i;
-		arr1[size++].b = n%C;
-		mergeSort(arr,i,i+(n%C)-1);
+		arr1[size++].b = j;
+		mergeSort(arr,i,i+j-1);
 	}
 
 	// Take 2 blocks at a time and merge untill only 1 block of size n is remaining which is the sorted array
